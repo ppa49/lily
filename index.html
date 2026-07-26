@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#fff8f1">
+  <title>Lily's Makeup Game</title>
+  <style>
+    :root{--ink:#382b43;--purple:#7046b6;--pink:#f04f85}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--ink);font-family:Arial,sans-serif;background:linear-gradient(135deg,#fff8f1,#fff5fb 48%,#f8f1ff)}
+    button,label{-webkit-tap-highlight-color:transparent}button{font:inherit}
+    header{min-height:92px;padding:14px clamp(15px,4vw,65px);display:flex;align-items:center;justify-content:space-between;gap:18px;background:#fffefa;border-bottom:2px solid #f2e9df}
+    .brand,.safe,.title,.choice-title,.photo-copy{display:flex;align-items:center;gap:11px}.logo{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;color:#fff;background:linear-gradient(145deg,#ff7ea6,#aa6ad4);box-shadow:0 5px 0 #e7cde9;font:bold 33px Georgia;transform:rotate(-5deg)}
+    h1{margin:0;color:var(--purple);font:700 clamp(23px,3vw,35px) Georgia}.brand p{margin:3px 0 0;color:#a0688e;font-weight:700}.safe{padding:10px 15px;border-radius:15px;background:#effaf1;color:#347247}.safe div{display:grid}.safe small{margin-top:2px;color:#62856e}
+    .game{width:min(1220px,95vw);margin:24px auto 16px;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(330px,.8fr);gap:22px}.studio,.palette{overflow:hidden;border:2px solid #eee2d6;border-radius:27px;background:#fffefa;box-shadow:0 12px 35px #8d608b1c}
+    .photo-top{min-height:72px;padding:11px 17px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:2px solid #f2e8df}.step{flex:none;width:35px;height:35px;border-radius:50%;display:grid;place-items:center;color:#fff;background:var(--purple);font-size:19px;font-weight:900}.photo-copy{flex-wrap:wrap}.photo-copy strong{font-size:18px}.photo-copy small{width:100%;margin:-7px 0 0 46px;color:#806f82}
+    .photo-button,.big-photo{cursor:pointer;border-radius:14px;padding:12px 16px;color:#fff;background:var(--purple);font-weight:900;box-shadow:0 4px 0 #4e2d82}input[type=file]{position:absolute;width:1px;height:1px;opacity:0}
+    .modebar{display:none;grid-template-columns:1fr 1fr;gap:8px;padding:12px 16px 0}.modebar button{border:2px solid #e6d8e5;border-radius:12px;padding:10px;background:#fff;color:#79677c;font-weight:900;cursor:pointer}.modebar button.current{border-color:#8252b4;background:#f1e7ff;color:#62328e}
+    .canvas-wrap{position:relative;margin:15px;aspect-ratio:1;overflow:hidden;border:3px dashed #decbe0;border-radius:21px;background:#f8edf5}.canvas-wrap canvas{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair}
+    .empty{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;padding:22px;text-align:center;pointer-events:none}.empty>span{font-size:72px;filter:drop-shadow(0 6px 0 #e8cbe2)}.empty h2{margin:13px 0 4px;color:var(--purple);font:700 31px Georgia}.empty p{margin:0 0 21px;color:#776a78}.empty label{pointer-events:auto}
+    .guide-tip{display:none;position:absolute;top:13px;left:50%;transform:translateX(-50%);padding:8px 14px;border-radius:99px;background:#33293dcc;color:#fff;font-size:13px;font-weight:800;white-space:nowrap}
+    .canvas-actions{display:none;justify-content:center;gap:8px;padding:0 14px 14px}.canvas-actions button{border:2px solid #ddcce5;border-radius:12px;padding:9px 12px;background:#fff;color:#67437f;font-weight:800;cursor:pointer}.canvas-actions button:disabled{opacity:.4}.canvas-actions .primary{background:#8450b6;border-color:#6e3d9d;color:#fff}
+    .palette{padding:21px}.title{margin-bottom:17px}.title div,.choice-title div{display:grid}.title strong{color:#593787;font:700 22px Georgia}.title small,.choice-title small{margin-top:3px;color:#8b788d}
+    .tools{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.tools button{min-height:84px;border:2px solid #eadce7;border-radius:15px;background:#fff;color:#655268;font-size:11px;font-weight:800;cursor:pointer}.tools button span{display:block;margin-bottom:4px;font-size:28px}.tools button.active{transform:translateY(-2px);border-color:#8a5ac5;background:#f5eaff;color:#64329a;box-shadow:0 4px 0 #d9c3ee}
+    .choice{margin-top:17px;padding:16px;border:2px solid #f8dce6;border-radius:19px;background:#fff4f8}.choice-title>span{font-size:34px}.choice-title strong{color:#82375a;font:700 18px Georgia}.swatches{display:grid;grid-template-columns:repeat(6,1fr);gap:9px;margin-top:15px}.swatches button{aspect-ratio:1;border:4px solid #fff;border-radius:50%;color:transparent;font-weight:900;cursor:pointer;box-shadow:0 2px 5px #6b3f5b44}.swatches button.picked{outline:3px solid #6e438f;color:#fff;transform:scale(1.08)}
+    .strength{display:block;margin:20px 3px 15px}.strength span{display:flex;justify-content:space-between;align-items:center;color:#8a7787;font-size:12px}.strength b{color:#57445c;font-size:14px}.strength input{width:100%;height:24px;accent-color:#e85888}
+    .help{display:grid;grid-template-columns:auto 1fr;gap:2px 9px;align-items:center;margin-bottom:16px;padding:11px;border:2px solid #e3d7f2;border-radius:14px;background:#f5f0ff;color:#67506b}.help>span{grid-row:1/3;font-size:26px}.help small{color:#89758b}
+    .save,.reset{width:100%;border:0;border-radius:15px;font-weight:900;cursor:pointer}.save{padding:15px;background:linear-gradient(90deg,#f04f85,#aa5ac6);box-shadow:0 5px 0 #7a3c8c;color:#fff;font-size:17px}.save:disabled,.reset:disabled{opacity:.4}.reset{margin-top:10px;padding:11px;background:#f4ede9;color:#735f74}
+    footer{padding:8px 0 21px;text-align:center;color:#8e6f89;font-weight:800}
+    @media(max-width:880px){.game{grid-template-columns:1fr;max-width:700px}.safe small{display:none}}@media(max-width:550px){header{padding:11px 13px}.logo{width:47px;height:47px;font-size:27px}h1{font-size:20px}.brand p{font-size:12px}.safe div{display:none}.game{width:96vw;margin-top:9px;gap:11px}.studio,.palette{border-radius:19px}.photo-copy small{display:none}.photo-button{font-size:0;padding:11px}.photo-button::first-letter{font-size:21px}.canvas-wrap{margin:9px}.palette{padding:15px}.tools{grid-template-columns:repeat(3,1fr)}.tools button{min-height:76px}.swatches{gap:6px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand"><span class="logo">L</span><div><h1>Lily's Makeup Game</h1><p>Paint a little magic ✨</p></div></div>
+    <div class="safe"><span>🔒</span><div><strong>Private &amp; safe</strong><small>Your photo stays on this device</small></div></div>
+  </header>
+  <main class="game">
+    <section class="studio">
+      <div class="photo-top">
+        <div class="photo-copy"><span class="step">1</span><strong>Pick a photo</strong><small id="photoName">Front-facing photos work best!</small></div>
+        <label class="photo-button">📷 <span id="photoButtonText">Take or choose photo</span><input id="photoInput" type="file" accept="image/*" capture="user"></label>
+      </div>
+      <div class="modebar" id="modebar">
+        <button id="fitMode" class="current">1 · Fit face markers</button><button id="paintMode">2 · Paint makeup</button>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="canvas" width="760" height="760" aria-label="Makeup photo canvas"></canvas>
+        <div class="empty" id="empty"><span>🌼</span><h2>Let's get glowing!</h2><p>Take a selfie or choose a photo to start.</p><label class="big-photo">📷 Add a photo<input id="photoInput2" type="file" accept="image/*" capture="user"></label></div>
+        <div class="guide-tip" id="tip">☝️ Line up every marker</div>
+      </div>
+      <div class="canvas-actions" id="actions">
+        <button id="leftAction">− Smaller</button><button class="primary" id="centerAction">🎨 Start painting</button><button id="rightAction">＋ Bigger</button>
+      </div>
+    </section>
+    <aside class="palette">
+      <div class="title"><span class="step">2</span><div><strong>Choose &amp; draw</strong><small>Pick a tool, color, and boldness</small></div></div>
+      <div class="tools" id="tools"></div>
+      <div class="choice">
+        <div class="choice-title"><span id="choiceIcon">💄</span><div><strong id="choiceLabel">Lipstick colors</strong><small>Which one do you love?</small></div></div>
+        <div class="swatches" id="swatches"></div>
+      </div>
+      <label class="strength"><span><strong>Soft</strong><b>Boldness &amp; brush size</b><strong>Bold</strong></span><input id="strength" type="range" min="20" max="95" value="55"></label>
+      <div class="help"><span>🪄</span><strong>Draw anywhere you like</strong><small>The magic brush stays inside the right face area.</small></div>
+      <button class="save" id="save" disabled>💖 Save my look</button>
+      <button class="reset" id="reset" disabled>↻ Start over</button>
+    </aside>
+  </main>
+  <footer>🌈 Made with love for Lily · Photos never leave your device 🌈</footer>
+  <script>
+    (() => {
+      const toolData=[
+        {id:"lips",label:"Lipstick",icon:"💄",colors:["#f04475","#d61f4b","#9c3f8f","#f26b55","#a93240","#eb6d9f"]},
+        {id:"eyes",label:"Eye shadow",icon:"🌙",colors:["#8d66cc","#e680b2","#55a6d9","#64ad8d","#d49b35","#7755ad"]},
+        {id:"blush",label:"Blush",icon:"🌸",colors:["#f58b98","#ed6c8c","#d986aa","#f2a070","#c96073","#ef9eac"]},
+        {id:"sparkle",label:"Sparkle",icon:"✨",colors:["#ffd94e","#f5b9df","#a9e6ff","#d6b7ff","#fff3a6","#9de4cb"]},
+        {id:"earrings",label:"Earrings",icon:"💎",colors:["#ffd44d","#ff7fa5","#9fdff5","#a474d0","#72c7a7","#f2f2f2"]}
+      ];
+      const defaults=()=>({leftEye:{dx:-.34,dy:-.26},rightEye:{dx:.34,dy:-.26},mouth:{dx:0,dy:.49},leftEar:{dx:-.84,dy:.02},rightEar:{dx:.84,dy:.02}});
+      const canvas=document.querySelector("#canvas"),ctx=canvas.getContext("2d"),toolsEl=document.querySelector("#tools"),swatches=document.querySelector("#swatches");
+      let image=null,mode="fit",active="lips",strength=55,guide={x:50,y:47,scale:1},points=defaults(),strokes=[],action=null,paintStarted=false;
+      const selected=Object.fromEntries(toolData.map(t=>[t.id,t.colors[0]]));
+      const tool=()=>toolData.find(t=>t.id===active);
+      const geo=()=>({x:canvas.width*guide.x/100,y:canvas.height*guide.y/100,s:Math.min(canvas.width,canvas.height)*.34*guide.scale});
+      function inside(type,px,py){
+        const {x,y,s}=geo(),near=(p,rx,ry)=>{const dx=(px-(x+p.dx*s))/(s*rx),dy=(py-(y+p.dy*s))/(s*ry);return dx*dx+dy*dy<=1};
+        if(type==="lips")return near(points.mouth,.34,.22);
+        if(type==="eyes")return near(points.leftEye,.33,.22)||near(points.rightEye,.33,.22);
+        if(type==="earrings")return near(points.leftEar,.22,.30)||near(points.rightEar,.22,.30);
+        if(type==="blush")return near({dx:-.51,dy:.18},.33,.27)||near({dx:.51,dy:.18},.33,.27);
+        const dx=(px-x)/(s*.78),dy=(py-y)/(s*.98);return dx*dx+dy*dy<=1;
+      }
+      function draw(showGuide=mode==="fit"){
+        ctx.clearRect(0,0,760,760);
+        if(!image){const g=ctx.createLinearGradient(0,0,760,760);g.addColorStop(0,"#fff1f6");g.addColorStop(1,"#f4eaff");ctx.fillStyle=g;ctx.fillRect(0,0,760,760);return}
+        const ratio=Math.max(760/image.width,760/image.height),iw=image.width*ratio,ih=image.height*ratio;ctx.drawImage(image,(760-iw)/2,(760-ih)/2,iw,ih);
+        strokes.forEach(stroke=>{ctx.globalAlpha=stroke.strength/100*(stroke.tool==="blush"?.36:.72);ctx.fillStyle=stroke.color;
+          const r=stroke.tool==="blush"?24:stroke.tool==="sparkle"?6:stroke.tool==="earrings"?12:stroke.tool==="eyes"?13:9;
+          stroke.dots.forEach(d=>{const px=d.x*760,py=d.y*760,rr=r*(.55+stroke.strength/120);if(stroke.tool==="sparkle"){ctx.save();ctx.translate(px,py);ctx.rotate(Math.PI/4);ctx.fillRect(-rr/2,-rr/2,rr,rr);ctx.restore()}else{ctx.beginPath();ctx.arc(px,py,rr,0,Math.PI*2);ctx.fill()}})
+        });
+        if(showGuide){const {x,y,s}=geo();ctx.globalAlpha=.88;ctx.strokeStyle="#fff";ctx.lineWidth=3;ctx.setLineDash([9,8]);ctx.beginPath();ctx.ellipse(x,y,s*.84,s*1.12,0,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+          [["leftEye","👁"],["rightEye","👁"],["mouth","👄"],["leftEar","👂"],["rightEar","👂"]].forEach(([name,label])=>{const p=points[name],px=x+p.dx*s,py=y+p.dy*s;ctx.fillStyle="#fff";ctx.strokeStyle="#7046b6";ctx.lineWidth=3;ctx.beginPath();ctx.arc(px,py,19,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle="#3c2948";ctx.font="17px Arial";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(label,px,py+1)})
+        }ctx.globalAlpha=1;
+      }
+      function renderControls(){
+        toolsEl.innerHTML=toolData.map(t=>`<button data-tool="${t.id}" class="${active===t.id?"active":""}"><span>${t.icon}</span>${t.label}</button>`).join("");
+        document.querySelector("#choiceIcon").textContent=tool().icon;document.querySelector("#choiceLabel").textContent=tool().label+" colors";
+        swatches.innerHTML=tool().colors.map(c=>`<button data-color="${c}" aria-label="Choose ${c}" class="${selected[active]===c?"picked":""}" style="background:${c}">✓</button>`).join("");
+        toolsEl.querySelectorAll("button").forEach(b=>b.onclick=()=>{active=b.dataset.tool;if(image)setMode("paint");renderControls();sync()});
+        swatches.querySelectorAll("button").forEach(b=>b.onclick=()=>{selected[active]=b.dataset.color;renderControls()});
+      }
+      function setMode(next){mode=next;sync();draw()}
+      function sync(){
+        const has=!!image;document.querySelector("#empty").style.display=has?"none":"grid";document.querySelector("#modebar").style.display=has?"grid":"none";document.querySelector("#actions").style.display=has?"flex":"none";document.querySelector("#tip").style.display=has?"block":"none";
+        document.querySelector("#fitMode").classList.toggle("current",mode==="fit");document.querySelector("#paintMode").classList.toggle("current",mode==="paint");
+        document.querySelector("#tip").textContent=mode==="fit"?"☝️ Line up every marker":"🖌️ Draw "+tool().label.toLowerCase()+" here!";
+        const l=document.querySelector("#leftAction"),c=document.querySelector("#centerAction"),r=document.querySelector("#rightAction");
+        if(mode==="fit"){l.textContent="− Smaller";c.textContent="🎨 Start painting";c.className="primary";r.textContent="＋ Bigger";l.disabled=r.disabled=false}
+        else{l.textContent="↶ Undo";c.textContent="◎ Adjust markers";c.className="";r.textContent="🧽 Erase all";l.disabled=r.disabled=!strokes.length}
+        document.querySelector("#save").disabled=document.querySelector("#reset").disabled=!has;
+      }
+      function load(file){if(!file)return;const url=URL.createObjectURL(file),img=new Image();img.onload=()=>{image=img;guide={x:50,y:47,scale:1};points=defaults();strokes=[];mode="fit";document.querySelector("#photoName").textContent=file.name;document.querySelector("#photoButtonText").textContent="New photo";URL.revokeObjectURL(url);sync();draw()};img.src=url}
+      document.querySelector("#photoInput").onchange=e=>load(e.target.files[0]);document.querySelector("#photoInput2").onchange=e=>load(e.target.files[0]);
+      document.querySelector("#fitMode").onclick=()=>setMode("fit");document.querySelector("#paintMode").onclick=()=>setMode("paint");
+      document.querySelector("#strength").oninput=e=>strength=Number(e.target.value);
+      document.querySelector("#leftAction").onclick=()=>{if(mode==="fit")guide.scale=Math.max(.65,guide.scale-.08);else strokes.pop();sync();draw()};
+      document.querySelector("#centerAction").onclick=()=>setMode(mode==="fit"?"paint":"fit");
+      document.querySelector("#rightAction").onclick=()=>{if(mode==="fit")guide.scale=Math.min(1.5,guide.scale+.08);else strokes=[];sync();draw()};
+      document.querySelector("#reset").onclick=()=>{strength=55;document.querySelector("#strength").value=55;guide={x:50,y:47,scale:1};points=defaults();strokes=[];setMode("fit")};
+      document.querySelector("#save").onclick=()=>{draw(false);const a=document.createElement("a");a.download="lilys-makeup-look.png";a.href=canvas.toDataURL("image/png");a.click();draw()};
+      const pos=e=>{const r=canvas.getBoundingClientRect();return{px:(e.clientX-r.left)/r.width*760,py:(e.clientY-r.top)/r.height*760}};
+      canvas.onpointerdown=e=>{if(!image)return;canvas.setPointerCapture(e.pointerId);const {px,py}=pos(e);if(mode==="paint"){action="paint";paintStarted=inside(active,px,py);if(paintStarted)strokes.push({tool:active,color:selected[active],strength,dots:[{x:px/760,y:py/760}]})}else{const {x,y,s}=geo();action=Object.keys(points).find(n=>Math.hypot(px-(x+points[n].dx*s),py-(y+points[n].dy*s))<30)||"face"}draw()};
+      canvas.onpointermove=e=>{if(!action)return;const {px,py}=pos(e);if(action==="paint"){if(!inside(active,px,py))return;if(!paintStarted){paintStarted=true;strokes.push({tool:active,color:selected[active],strength,dots:[]})}strokes[strokes.length-1].dots.push({x:px/760,y:py/760})}else if(action==="face"){guide.x=Math.max(15,Math.min(85,px/760*100));guide.y=Math.max(20,Math.min(78,py/760*100))}else{const{x,y,s}=geo();points[action]={dx:(px-x)/s,dy:(py-y)/s}}draw()};
+      const end=()=>{action=null;paintStarted=false;sync()};canvas.onpointerup=end;canvas.onpointercancel=end;
+      renderControls();sync();draw();
+    })();
+  </script>
+</body>
+</html>
